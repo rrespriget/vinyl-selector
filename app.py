@@ -4,8 +4,18 @@ from google.cloud import bigquery
 import os
 import streamlit.web.cli as stcli
 
+st.set_page_config(
+    page_title="Vinyl Selector",
+    page_icon="🎵",
+    layout="wide",
+)
+
+st.title("🎶 Bienvenue dans Vinyl Selector")
+
+st.write("Utilisez la barre latérale pour naviguer vers la page de recherche Discogs.")
+
 # GOOGLE_APPLICATION_CREDENTIALS
-credentials_path = os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcp_key.json"
+credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
 # Fonction pour charger les données
 @st.cache_data
