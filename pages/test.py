@@ -1,13 +1,16 @@
 import sys
 import os
-#from dotenv import load_dotenv
+
+# Ajouter le chemin du projet pour permettre l'import de `api/`
 project_root = os.getcwd()
 sys.path.append(project_root)
-from api.discogs_wrapper import DiscogsClient
+# Importer BigQueryClient
+from api.bigquery_client import BigQueryClient
 
-print(f"🔍 DEBUG: DISCOGS_API_TOKEN = {repr(os.getenv('DISCOGS_API_TOKEN'))}")
+PROJECT_ID = "vinyl-selector"
+DATASET_ID = "vinyl_dataset_dev"
+TABLE_ID = "vinyl_collection"
 
-# Initialisation du client Discogs
-discogs = DiscogsClient()
-results = discogs.search_vinyl("slipknot")
-print(results)
+bigquery_client = BigQueryClient(PROJECT_ID, DATASET_ID, TABLE_ID)
+
+print("✅ BigQueryClient importé avec succès !")
