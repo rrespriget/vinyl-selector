@@ -29,13 +29,37 @@ def on_search():
 
 # Fonction de callback pour l'ajout d'un vinyle
 def add_vinyl(vinyl_data, vinyl_id):
-    success = bigquery_client.add_vinyl(vinyl_data)
-    if success:
-        st.session_state.added_vinyls.add(vinyl_id)
-        return True
-    return False
+    formatted_data = None
+    try:
+        # Debug: afficher les données reçues
+        st.write("Données reçues:", vinyl_data)
+        
+        # Formatage des données selon la structure exacte de la table BigQuery
+        formatted_data = {
+            "album": vinyl_data.get("album", "Inconnu"),
+            "artiste": vinyl_data.get("artiste", "Inconnu"),
+            "annee_sortie": int(vinyl_data.get("annee_sortie", 0)),
+            "genre": "Inconnu",
+            "label": vinyl_data.get("label", "Inconnu")
+        }
+        
+        # Debug: afficher les données formatées
+        st.write("Données formatées:", formatted_data)
+        
+        success = bigquery_client.add_vinyl(formatted_data)
+        if success:
+            st.session_state.added_vinyls.add(vinyl_id)
+            return True
+        return False
+    except Exception as e:
+        st.error(f"Erreur lors de l'ajout : {str(e)}")
+        if formatted_data:
+            st.write("Données problématiques:", formatted_data)
+        else:
+            st.write("Erreur avant le formatage des données")
+        return False
 
-# 📌 Barre de recherche utilisateur
+# Barre de recherche utilisateur
 st.text_input("Entrez le nom d'un vinyle ou d'un artiste", 
               key="query", 
               on_change=on_search)
@@ -54,6 +78,7 @@ if st.session_state.search_results:
 
             st.subheader(r["title"])
             st.write(f"🎤 **Artiste(s) :** {r['artist']}")
+            #st.write(f"🎤 **Genre :** {r['genre']}")
             st.write(f"📅 **Année :** {r['year']}")
             st.write(f"🏷 **Label :** {r['label']}")
             st.write(f"🌍 **Pays :** {r['country']}")
@@ -64,11 +89,11 @@ if st.session_state.search_results:
             vinyl_id = str(r['id'])
             if vinyl_id not in st.session_state.added_vinyls:
                 vinyl_data = {
-                    "artiste": r["artist"],
-                    "album": r["title"],
-                    "annee_sortie": r["year"],
+                    "artiste": r.get("artist", "Inconnu"),
+                    "album": r.get("title", "Inconnu"),
+                    "annee_sortie": r.get("year", "0"),      # Sera converti en INT64
                     "genre": "Inconnu",
-                    "label": r["label"]
+                    "label": r.get("label", "Inconnu")
                 }
                 
                 col1, col2 = st.columns([1, 4])

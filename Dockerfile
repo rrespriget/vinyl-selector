@@ -7,6 +7,10 @@ WORKDIR /vinyl-selector
 # Credentials Google
 ENV GOOGLE_APPLICATION_CREDENTIALS="gcp_key.json"
 
+# Ajout de la variable d'environnement
+ENV DISCOGS_API_TOKEN="yRlbZhZoVdAMNBxuKLiEhcUuNAisqqLwjNHUrBxc"
+
+
 # Copier les fichiers nécessaires
 COPY requirements.txt requirements.txt
 COPY app.py app.py
