@@ -1,23 +1,32 @@
-# Utiliser une image Python légère comme base
-FROM python:3.13-slim
+# Image de base
+FROM python:3.13.1-slim
 
-# Définir le répertoire de travail
-WORKDIR /vinyl-selector
+# Répertoire de travail
+WORKDIR /app
 
-# Credentials Google
-ENV GOOGLE_APPLICATION_CREDENTIALS="gcp_key.json"
+# Variables d'environnement
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV DISCOGS_API_TOKEN=""
+ENV GOOGLE_APPLICATION_CREDENTIALS="/app/gcp_key.json"
 
-# Ajout de la variable d'environnement
-ENV DISCOGS_API_TOKEN="yRlbZhZoVdAMNBxuKLiEhcUuNAisqqLwjNHUrBxc"
 
+# Installation des dépendances système nécessaires
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copier les fichiers nécessaires
-COPY requirements.txt requirements.txt
-COPY app.py app.py
-COPY gcp_key.json gcp_key.json
-
-# Installer les dépendances
+# Copie des fichiers de dépendances
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Copie de l'application
+COPY app.py .
+COPY pages/ ./pages/
+COPY api/ ./api/
+COPY gcp_key.json .
 
 # Exposer le port 8080 (valeur utilisée par défaut)
 EXPOSE 8080

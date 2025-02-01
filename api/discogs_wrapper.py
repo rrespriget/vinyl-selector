@@ -2,6 +2,8 @@ import os
 import discogs_client
 from dotenv import load_dotenv
 import streamlit as st
+import time
+from functools import lru_cache
 
 # Charger les variables d'environnement (fichier .env à la racine du projet)
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '../.env'))
@@ -34,7 +36,8 @@ class DiscogsClient:
         self.client = discogs_client.Client('VinylSelector/1.0', 
                                           user_token=self.token)
 
-    def search_vinyl(self, query):
+    @lru_cache(maxsize=100)  # Cache les 100 dernières recherches
+    def search_release(self, query):
         """
         Recherche un vinyle sur Discogs.
 
@@ -42,6 +45,7 @@ class DiscogsClient:
         :return: Liste des résultats sous forme de dictionnaires.
         """
         try:
+            time.sleep(1)  # Ajoute un délai d'1 seconde entre chaque requête
             print(f"Recherche de: {query}")
             
             # Récupérer les résultats sans slice
@@ -107,7 +111,7 @@ if __name__ == "__main__":
     discogs = DiscogsClient()
     
     # Test de la recherche
-    results = discogs.search_vinyl("Abbey Road Beatles")
+    results = discogs.search_release("Abbey Road Beatles")
     if results:
         print("✅ Résultats de la recherche :")
         for r in results:
