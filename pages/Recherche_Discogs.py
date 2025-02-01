@@ -25,7 +25,7 @@ st.title("🔍 Recherche de Vinyles sur Discogs")
 # Fonction de callback pour la recherche
 def on_search():
     if st.session_state.query:
-        st.session_state.search_results = discogs.search_vinyl(st.session_state.query)
+        st.session_state.search_results = discogs.search_release(st.session_state.query)
 
 # Fonction de callback pour l'ajout d'un vinyle
 def add_vinyl(vinyl_data, vinyl_id):
@@ -78,10 +78,14 @@ if st.session_state.search_results:
 
             st.subheader(r["title"])
             st.write(f"🎤 **Artiste(s) :** {r['artist']}")
-            #st.write(f"🎤 **Genre :** {r['genre']}")
+            if r['genres']:
+                st.write(f"🎵 **Genre(s) :** {', '.join(r['genres'])}")
+            if r.get('styles'):
+                st.write(f"🎨 **Style(s) :** {', '.join(r['styles'])}")
             st.write(f"📅 **Année :** {r['year']}")
             st.write(f"🏷 **Label :** {r['label']}")
             st.write(f"🌍 **Pays :** {r['country']}")
+
 
             if r["cover"]:
                 st.image(r["cover"], width=200)
